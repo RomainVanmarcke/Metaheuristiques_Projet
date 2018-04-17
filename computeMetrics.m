@@ -1,6 +1,6 @@
-function metrics = computeMetrics(metrics, scoresPareto, scoresPool, scoresFirstFront, g)
+function metrics = computeMetrics(metrics, scoresPareto, scoresFirstFront, g)
     %FIRST METRIC
-    D = pdist2(scoresPool, scoresPareto);
+    D = pdist2(scoresFirstFront, scoresPareto);
     minDistances = min(D);
     metrics.first(g) = mean(minDistances);
 

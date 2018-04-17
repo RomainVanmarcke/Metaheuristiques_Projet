@@ -1,4 +1,4 @@
-function popg = testFeasibility(feasibilityFunction, popg, lower, upper, ~)
+function [popg, counter] = testFeasibility(feasibilityFunction, counter, popg, lower, upper, ~)
     % This function assures that no chromosome has a composant that does not respect the requirement
     % after a variation operation
     N = size(popg, 1);
@@ -6,7 +6,7 @@ function popg = testFeasibility(feasibilityFunction, popg, lower, upper, ~)
     for i=1:N
         for k=1:L
             x = popg(i,k);
-            x = feasibilityFunction(x, lower(k), upper(k));
+            [x, counter] = feasibilityFunction(counter, x, lower(k), upper(k));
             popg(i,k) = x;
         end
     end

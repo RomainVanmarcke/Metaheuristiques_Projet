@@ -1,99 +1,64 @@
-function [paretoFront, scores ] = MOFA(problem)
-    %% CONFIGURATION PART 
-
-    
+function [ scores, archive, archive_history ] = MOFA(problem)
     %GENERAL SETTINGS
     N = problem.N; %Population size 
     L = problem.L; %Chromosome size
-    objNumber = 2; %Number of objective functions
+    objNumber = problem.objNumber; %Number of objective functions
     Gmax = problem.Gmax; %Generation max
-    pc = 0.9; %Crossover probability
-    pm = 1/L; %Mutation probability
-    M = N; %MatingPool size
-    binary = 0; %Encoding mode
 
-    %SELECTION
-    selectionFunction = @tournamentSelection; %need k
-    k = 2; %size of tournament
-    
-    %CROSSOVER
-    crossoverFunction = @simulatedBinaryCrossover;
-    alpha = 0.5; %control the scope of the expansion
-    
-    %MUTATION
-    mutationFunction = @polynomialMutation; %need n
-    b = 1; %control the speed of the annealing
-    sigma = 1; %standard deviation vector
-    n = 20; %control parameter
-    
-    %FEASIBILITY
-    feasibilityFunction = @firstMethod;
-    
-    %% EXECUTION PART
-%     scores = zeros(Gmax, N, objNumber); %scores is a matrix of scores
     % INITIALIZATION
-    pool = initialization(N, L, binary, problem.lower, problem.upper); 
-    scores1 = evaluation(problem, pool, binary, objNumber);
-    [~, ranks] = fastNonDominatedSort(scores1);
-    matingPool= selection(selectionFunction, ranks, M, L, pool, k); %matingPool is a vector of chromosomes
-    children = crossover(crossoverFunction, matingPool, pc, L, alpha); %children is a vector of chromosomes
-    children = mutation(mutationFunction, children, pm, problem.lower, problem.upper, b, 1, Gmax, n, sigma);
-    children = testFeasibility(feasibilityFunction, children, problem.lower, problem.upper, binary);
+    pop(1,:,:) = initialization(N, L, problem.lower, problem.upper); 
+    scores = zeros(Gmax, N, objNumber);
+    counter = 0;
+    archive.number_firefly = 0;
+    archive.non_dominated_firefly = [];
+    archive.firefly_scores = [];
+    archive_history(1).array = [];
     
-    pop = zeros(Gmax, 2*N, L);
-    paretoFront(1).array = [];
-    scores(1).array = [];
     % Process all generations
     for g=1:Gmax 
-        pop(g,:,:) = [pool; children];
-        popg = reshape(pop(g,:, :), [2*N, L]); 
-        
+        popg = reshape(pop(g,:, :), [N, L]);
         % EVALUATION
-        scoresg = evaluation(problem, popg, binary, objNumber);
-        [fronts, ranks] = fastNonDominatedSort(scoresg);
-        
-        poolIdx = [];
-        f = 1;
-        while (length(poolIdx) + length(fronts(f).array)) <= N
-            poolIdx = [poolIdx; fronts(f).array];
-            f = f + 1;
-        end
-        
-        if (length(poolIdx) ~= N)
-            scoresFrontf = [];
-            for i=1:length(fronts(f).array)
-                scoresFrontf = [scoresFrontf; scoresg(fronts(f).array(i),:)];
-            end
-            distances = crowdingDistanceAssignement(scoresFrontf, g);
-            sortedLastFront = sortPartialOrder(fronts(f).array, distances);
-            poolIdx = [poolIdx; sortedLastFront(1:(N - length(poolIdx)))];
-        end
-        
-        pool = zeros(N,L);
-        newRanks = zeros(N,1);
-        for i=1:N
-            pool(i,:) = popg(poolIdx(i),:);
-            newRanks(i) = ranks(poolIdx(i));
-        end
-        % Variation Operators
+        scoresg = evaluation(problem, popg, objNumber);
 
-        matingPool= selection(selectionFunction, newRanks, M, L, pool, k); %matingPool is a vector of chromosomes
-        children = crossover(crossoverFunction, matingPool, pc, L, alpha); %children is a vector of chromosomes
-        children = mutation(mutationFunction, children, pm, problem.lower, problem.upper, b, g, Gmax, n, sigma);
-        children = testFeasibility(feasibilityFunction, children, problem.lower, problem.upper, binary);
-
-        % Find pareto front and distance metric foreach gen
-        firstFrontIdx = fronts(1).array;
-        scoresFirstFront = zeros(length(firstFrontIdx),2);
-        for i=1:length(firstFrontIdx)
-            scoresFirstFront(i,:) = scoresg(firstFrontIdx(i),:);
+        scores(g,:,:) = scoresg;
+        popg_ori = popg;
+        scoresg_ori = scoresg;
+        
+        % ITERATE THROUGH ALL FIREFLIES
+        for i=1:N     
+           number_moves = 0;
+           for j=1:N
+               if (i ~= j && dominates(scoresg_ori(j,:), scoresg(i,:)))
+                   number_moves = number_moves + 1;
+                   popg(i,:) = move_firefly( popg(i,:), popg_ori(j,:), problem);
+                   [popg(i,:), counter] = testFeasibility(problem.feasibilityFunction, counter, popg(i,:), problem.lower, problem.upper);
+                   scoresg(i,:) = evaluation(problem, popg(i,:), objNumber);
+               end
+              
+           end
+           % INSERT IN OR AFTER THE SECOND FOR LOOP
+           if (number_moves < 1)
+               % UPDATE ARCHIVE
+               archive = update_archive(archive, popg(i,:), scoresg(i,:), problem.M);  
+               
+               wk = randfixedsum(objNumber,1,1,0,1);
+               bestFirefly = popg(findBestSolution(wk, scoresg),:);
+               % RANDOM WALK
+               popg(i,:) = random_walk(bestFirefly, problem.alpha);
+               [popg(i,:), counter] = testFeasibility(problem.feasibilityFunction, counter, popg(i,:), problem.lower, problem.upper);
+               scoresg(i,:) = evaluation(problem, popg(i,:), objNumber);
+           end
+           % UPDATE NEXT GENERATION
+           pop(g+1,i,:) =  popg(i,:);
+           
         end
-        paretoFront(g).array = scoresFirstFront;
+        % Archive history
+        archive_history(g).array = archive.firefly_scores;
         
-        scoresPool = evaluation(problem, pool, binary, objNumber);
-        scores(g).array = scoresPool(:,:);      
-        
+        % Decrease value of alpha through time
+        problem.alpha = problem.alpha.*problem.delta;
     end
+    fprintf("MOFA : Number of x out of bound : %d\n", counter);
     
 end
     
