@@ -44,6 +44,5 @@ function main()
     fprintf('Number of results in archive %d \n', archiveMOFA.number_firefly);
     displayAllGenResult(problem, scoresMOFA, paretoFrontNSGA2, OptiPareto);
     displayResult(problem, archiveMOFA.firefly_scores, paretoFrontNSGA2(Gmax).array, OptiPareto, metrics);
-
 end
 
