@@ -32,7 +32,7 @@ function [paretoFront, scores ] = NSGA2(problem)
 %     scores = zeros(Gmax, N, objNumber); %scores is a matrix of scores
     % INITIALIZATION
     pool = initialization(N, L, problem.lower, problem.upper); 
-    scores1 = evaluation(problem, pool, objNumber);
+    scores1 = evaluation(problem, pool);
     [~, ranks] = fastNonDominatedSort(scores1);
     matingPool= selection(selectionFunction, ranks, M, L, pool, k); %matingPool is a vector of chromosomes
     children = crossover(crossoverFunction, matingPool, pc, L, alpha); %children is a vector of chromosomes
@@ -48,7 +48,7 @@ function [paretoFront, scores ] = NSGA2(problem)
         popg = reshape(pop(g,:, :), [2*N, L]); 
         
         % EVALUATION
-        scoresg = evaluation(problem, popg, objNumber);
+        scoresg = evaluation(problem, popg);
         [fronts, ranks] = fastNonDominatedSort(scoresg);
         
         poolIdx = [];
@@ -89,7 +89,7 @@ function [paretoFront, scores ] = NSGA2(problem)
         end
         paretoFront(g).array = scoresFirstFront;
         
-        scoresPool = evaluation(problem, pool, objNumber);
+        scoresPool = evaluation(problem, pool);
         scores(g).array = scoresPool(:,:);      
         
     end

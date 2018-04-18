@@ -18,7 +18,7 @@ function [ scores, archive, archive_history ] = MOFA(problem)
     for g=1:Gmax 
         popg = reshape(pop(g,:, :), [N, L]);
         % EVALUATION
-        scoresg = evaluation(problem, popg, objNumber);
+        scoresg = evaluation(problem, popg);
 
         scores(g,:,:) = scoresg;
         popg_ori = popg;
@@ -32,7 +32,7 @@ function [ scores, archive, archive_history ] = MOFA(problem)
                    number_moves = number_moves + 1;
                    popg(i,:) = move_firefly( popg(i,:), popg_ori(j,:), problem);
                    [popg(i,:), counter] = testFeasibility(problem.feasibilityFunction, counter, popg(i,:), problem.lower, problem.upper);
-                   scoresg(i,:) = evaluation(problem, popg(i,:), objNumber);
+                   scoresg(i,:) = evaluation(problem, popg(i,:));
                end
               
            end
@@ -46,7 +46,7 @@ function [ scores, archive, archive_history ] = MOFA(problem)
                % RANDOM WALK
                popg(i,:) = random_walk(bestFirefly, problem.alpha);
                [popg(i,:), counter] = testFeasibility(problem.feasibilityFunction, counter, popg(i,:), problem.lower, problem.upper);
-               scoresg(i,:) = evaluation(problem, popg(i,:), objNumber);
+               scoresg(i,:) = evaluation(problem, popg(i,:));
            end
            % UPDATE NEXT GENERATION
            pop(g+1,i,:) =  popg(i,:);

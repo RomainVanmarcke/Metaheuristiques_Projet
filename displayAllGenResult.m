@@ -1,4 +1,4 @@
-function displayAllGenResult(problem, scoresMOFA, scoresNSGA2, optiPareto) 
+function displayAllGenResult(problem, scoresMOFA, scoresNSGA2, scoresPESA, optiPareto) 
     % Display all chromosomes of the first front for the last generation
     figure;
     title(['Pareto Front for ', func2str(problem.fitnessFunction), ' problem']);
@@ -21,7 +21,12 @@ function displayAllGenResult(problem, scoresMOFA, scoresNSGA2, optiPareto)
     xNSGA2 = scoresNSGA2(1).array(:,1);
     yNSGA2 = scoresNSGA2(1).array(:,2);   
     nsga2 = plot(xNSGA2, yNSGA2,'bo');
-    legend('Optimal Pareto Front', 'MOFA Pareto Front', 'NSGA2 Pareto Front');
+    
+    % PESA
+    xPESA = scoresPESA(1).array(:,1);
+    yPESA = scoresPESA(1).array(:,2);   
+    pesa = plot(xPESA, yPESA,'g+');
+    legend('Optimal Pareto Front', 'MOFA Pareto Front', 'NSGA2 Pareto Front', 'PESA Pareto Front');
     pause(3);
     
     for g=2:problem.Gmax
@@ -35,6 +40,11 @@ function displayAllGenResult(problem, scoresMOFA, scoresNSGA2, optiPareto)
         xNSGA2 = scoresNSGA2(g).array(:,1);
         yNSGA2 = scoresNSGA2(g).array(:,2);
         set(nsga2,'XData',xNSGA2,'YData',yNSGA2);
+        
+        % PESA
+        xPESA = scoresPESA(g).array(:,1);
+        yPESA = scoresPESA(g).array(:,2);
+        set(pesa,'XData',xPESA,'YData',yPESA);
         pause(0.1);
     end
 end

@@ -13,7 +13,7 @@ function [paretoFrontAllG, scores ] = PESA(problem)
     
     M = Pi; % mating pool size
     
-    crossoverFunction= @simulatedBinaryCrossover;
+    crossoverFunction= @simulatedBinaryCrossoverPESA;
 %     crossoverFunction = @uniformCrossoverPESA;
     
 %     mutationFunction = @polynomialMutationPESA;
@@ -24,7 +24,7 @@ function [paretoFrontAllG, scores ] = PESA(problem)
 %     feasabilityFunction = @firstFeasability;
     feasabilityFunction = @secondFeasability;
     
-    problemFunction = problem.alias;
+%     problemFunction = problem.alias;
         
     lowerBounds = problem.lower; % lower bounds of the variables
     upperBounds = problem.upper; % upper bounds of the variables
@@ -52,7 +52,8 @@ function [paretoFrontAllG, scores ] = PESA(problem)
         
         all = [internalPopulation
             externalPopulation];
-        problemValue = problemFunction(all);
+%         problemValue = problemFunction(all);
+        problemValue = evaluation(problem, all);
         if t > 0
             scores(t).array = problemValue(:,:);
         end
@@ -62,10 +63,10 @@ function [paretoFrontAllG, scores ] = PESA(problem)
         for i=1:nall
             for j=i+1:nall
                 
-                if dominates(problemValue(i,:),problemValue(j,:))
+                if dominatesPESA(problemValue(i,:),problemValue(j,:))
                     dominationMatrix(i,j) = true;
                     
-                elseif dominates(problemValue(j,:),problemValue(i,:))
+                elseif dominatesPESA(problemValue(j,:),problemValue(i,:))
                     dominationMatrix(j,i)=true;
                     
                 end
@@ -139,7 +140,8 @@ function [paretoFrontAllG, scores ] = PESA(problem)
         internalPopulation = feasabilityFunction(internalPopulation, lowerBounds, upperBounds);
 
         if t > 0    
-            paretoFrontAllG(t).array = problemFunction(externalPopulation);
+%             paretoFrontAllG(t).array = problemFunction(externalPopulation);
+            paretoFrontAllG(t).array = evaluation(problem, externalPopulation);
         end 
         t=t+1;   
         
