@@ -7,7 +7,7 @@ function [paretoFront, scores ] = NSGA2(problem)
     L = problem.L; %Chromosome size
     objNumber = 2; %Number of objective functions
     Gmax = problem.Gmax; %Generation max
-    pc = 0.9; %Crossover probability
+    pc = 0.7; %Crossover probability
     pm = 1/L; %Mutation probability
     M = N; %MatingPool size
 

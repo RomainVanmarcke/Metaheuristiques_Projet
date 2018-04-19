@@ -16,10 +16,10 @@ function main()
     problem.beta0 = 1;
     problem.delta = 0.99;
     problem.M = M;
-    problem.feasibilityFunction = @firstMethod;
+    problem.feasibilityFunction = @secondMethod;
     
     % PESA PARAMETERS
-    problem.nGrid = 8; % number of grids per dimension
+    problem.nGrid = 32; % number of grids per dimension
     problem.crossover = @uniformCrossover;
     problem.mutation = @normalMutationPESA;
     
@@ -53,7 +53,7 @@ function main()
     fprintf('Alpha(at start) : %4.2f, Alpha(at end) : %4.2f,  Gamma : %4.2f \n', problem.alpha(1), problem.alpha(1)*0.97^Gmax,problem.gamma(1));
     fprintf('Result for Gen %d, Popsize %d \n', Gmax,N);
     fprintf('Number of results in MOFA archive %d \n', archiveMOFA.number_firefly);
-    displayAllGenResult(problem, scoresMOFA, paretoFrontNSGA2, paretoFrontPESA, OptiPareto);
+%     displayAllGenResult(problem, scoresMOFA, paretoFrontNSGA2, paretoFrontPESA, OptiPareto);
     displayResult(problem, archiveMOFA.firefly_scores, paretoFrontNSGA2(Gmax).array, paretoFrontPESA(Gmax).array, OptiPareto, metrics);
 end
 
