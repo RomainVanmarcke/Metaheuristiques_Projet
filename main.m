@@ -1,6 +1,6 @@
 function main()
     all = tic;
-    N = 100; %Population size 
+    N = 10; %Population size 
     Gmax = 250; %Generation max
     objNumber = 2; %Number of objectives functions
     M = 200; % Number of points wanted in MOFA approximation of Pareto Front

@@ -17,9 +17,10 @@ function [paretoFrontAllG, scores ] = PESA(problem)
 %     crossoverFunction = @uniformCrossoverPESA;
     
     mutationFunction = problem.mutation;
+%     mutationFunction = @polynomialMutationPESA;
 %     mutationFunction = @boundaryMutationPESA;
 %     mutationFunction = @uniformMutationPESA;
-%     mutationFunction = @normalMutationPESA;
+%    mutationFunction = @normalMutationPESA;
     
 %     feasabilityFunction = @firstFeasability;
     feasabilityFunction = @secondFeasability;
@@ -29,14 +30,16 @@ function [paretoFrontAllG, scores ] = PESA(problem)
     lowerBounds = problem.lower; % lower bounds of the variables
     upperBounds = problem.upper; % upper bounds of the variables
     
-    if length(lowerBounds) == 1
-        lowerBounds = [lowerBounds, lowerBounds];
-        upperBounds = [upperBounds, upperBounds];
-    end
+%     if length(lowerBounds) == 1
+%         lowerBounds = [lowerBounds, lowerBounds];
+%         upperBounds = [upperBounds, upperBounds];
+%     end
         
     gap = (upperBounds - lowerBounds)/nGrid;
 
-    internalPopulation = unifrnd(lowerBounds(2),upperBounds(2),Pi,L);
+    if length(lowerBounds) ~= 1
+        internalPopulation = unifrnd(lowerBounds(2),upperBounds(2),Pi,L);
+    end
     internalPopulation(:,1) = unifrnd(lowerBounds(1),upperBounds(1),Pi,1);
     internalPopulationGrid = zeros(Pi,L);
     
@@ -136,18 +139,16 @@ function [paretoFrontAllG, scores ] = PESA(problem)
         
         %Mutation
         internalPopulation = mutationFunction(children,pm, lowerBounds, upperBounds, n);
+                 
         
-        internalPopulation = feasabilityFunction(internalPopulation, lowerBounds, upperBounds);
+        while(any(any(internalPopulation<lowerBounds)) || any(any(internalPopulation>upperBounds)))
+            internalPopulation = feasabilityFunction(internalPopulation, lowerBounds, upperBounds);
+        end
 
         if t > 0    
-%             paretoFrontAllG(t).array = problemFunction(externalPopulation);
             paretoFrontAllG(t).array = evaluation(problem, externalPopulation);
         end 
         t=t+1;   
-        
-%         figure(1)
-%         plotParetoFront(paretoFront, problemFunction);   
-%         pause(0.01)
 
     end
     
