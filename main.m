@@ -6,7 +6,7 @@ function main()
     M = 200; % Number of points wanted in MOFA approximation of Pareto Front
 
     %PROBLEM
-    problem.fitnessFunction = @zdt1;
+    problem.fitnessFunction = @zdt6;
     problem = setProblemParameters(problem, N, Gmax, objNumber);
     
     % MOFA PARAMETERS
@@ -19,9 +19,9 @@ function main()
     problem.feasibilityFunction = @firstMethod;
     
     % PESA PARAMETERS
-    problem.nGrid = 10; % number of grids per dimension
-    problem.crossover = @simulatedBinaryCrossoverPESA;
-    problem.mutation = @boundaryMutationPESA;
+    problem.nGrid = 8; % number of grids per dimension
+    problem.crossover = @simulatedBinaryCrossover;
+    problem.mutation = @normalMutationPESA;
     
     tic
     [scoresMOFA, archiveMOFA, archive_history] = MOFA(problem);

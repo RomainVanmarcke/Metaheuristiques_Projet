@@ -5,7 +5,7 @@ function [paretoFrontAllG, scores ] = PESA(problem)
     Pe = 100; % externalPopulation size
     L = problem.L;  % chromosome size = number of genes
     pc = 0.7;
-    pm = 1/L;
+    pm = 1/3;
     nGrid = problem.nGrid; % number of grids per dimension
     % alpha = 0.5;
     n=20;
@@ -98,22 +98,32 @@ function [paretoFrontAllG, scores ] = PESA(problem)
                
         numArchive = size(externalPopulation, 1);
         squeezeFactor = ones(numArchive,1);
+        crowdMatrix = false(numArchive, numArchive);
         
         for i = 1:numArchive                        
             for j=i+1:numArchive
-                if externalPopulationGrid==externalPopulationGrid(i,:)
+                if sum(externalPopulationGrid(j,:)==externalPopulationGrid(i,:)) == L
                     squeezeFactor(i) = squeezeFactor(i)+1;
                     squeezeFactor(j) = squeezeFactor(j)+1;
+                    crowdMatrix(i,j) = true;
+                    crowdMatrix(j,i) = true;
                 end
             end
         end
 
+        
         while Pe<numArchive
-            [highestSqueezeFactor, indice] = max(squeezeFactor);
-            squeezeFactor(indice) = [];
+            [~, indice] = max(squeezeFactor);
+            squeezeFactor(indice) = 0;
             externalPopulation(indice,:) = [];
             externalPopulationGrid(indice,:) = [];
-            squeezeFactor(squeezeFactor == highestSqueezeFactor) = squeezeFactor(squeezeFactor == highestSqueezeFactor)-1;
+            for i = 1:size(crowdMatrix,1)
+                if crowdMatrix(indice,i) == true
+                    squeezeFactor(i) = squeezeFactor(i)-1;
+                    crowdMatrix(indice,i)=false;
+                    crowdMatrix(i,indice)=false;
+                end
+            end
             numArchive = numArchive-1;
         end          
         
@@ -137,9 +147,10 @@ function [paretoFrontAllG, scores ] = PESA(problem)
             end
         end
         
+        
         %Mutation
         internalPopulation = mutationFunction(children,pm, lowerBounds, upperBounds, n);
-                 
+                
         
         while(any(any(internalPopulation<lowerBounds)) || any(any(internalPopulation>upperBounds)))
             internalPopulation = feasabilityFunction(internalPopulation, lowerBounds, upperBounds);
