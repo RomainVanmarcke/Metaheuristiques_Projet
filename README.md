@@ -1,5 +1,5 @@
 # Metaheuristiques_Projet
 
-Implementation of two differents multi-objectives genetic algorithms: 
+Implementation of two differents multi-objectives algorithms: 
 - MOFA 
 - PESA

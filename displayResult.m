@@ -13,11 +13,11 @@ function displayResult(problem, scoresMOFA, scoresNSGA2, scoresPESA, optiPareto,
     end
     % MOFA
     hold on;
-    plot(scoresMOFA(:,1),scoresMOFA(:,2),'r*');
+    plot(scoresMOFA(:,1),scoresMOFA(:,2),'bo');
     hold off;
     % NSGA2
     hold on;
-    plot(scoresNSGA2(:,1),scoresNSGA2(:,2),'bo');
+    plot(scoresNSGA2(:,1),scoresNSGA2(:,2),'r*');
     hold off;
     % PESA
     hold on;

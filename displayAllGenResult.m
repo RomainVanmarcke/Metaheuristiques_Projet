@@ -15,12 +15,12 @@ function displayAllGenResult(problem, scoresMOFA, scoresNSGA2, scoresPESA, optiP
     % MOFA
     xMOFA = scoresMOFA(1,:,1);
     yMOFA = scoresMOFA(1,:,2);
-    mofa = plot(xMOFA, yMOFA,'r*');
+    mofa = plot(xMOFA, yMOFA,'bo');
     
     % NSGA2
     xNSGA2 = scoresNSGA2(1).array(:,1);
     yNSGA2 = scoresNSGA2(1).array(:,2);   
-    nsga2 = plot(xNSGA2, yNSGA2,'bo');
+    nsga2 = plot(xNSGA2, yNSGA2,'r*');
     
     % PESA
     xPESA = scoresPESA(1).array(:,1);

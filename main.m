@@ -18,6 +18,11 @@ function main()
     problem.M = M;
     problem.feasibilityFunction = @firstMethod;
     
+    % PESA PARAMETERS
+    problem.nGrid = 10; % number of grids per dimension
+    problem.crossover = @simulatedBinaryCrossoverPESA;
+    problem.mutation = @boundaryMutationPESA;
+    
     tic
     [scoresMOFA, archiveMOFA, archive_history] = MOFA(problem);
     toc
@@ -47,7 +52,7 @@ function main()
     %% DISPLAY PART
     fprintf('Alpha(at start) : %4.2f, Alpha(at end) : %4.2f,  Gamma : %4.2f \n', problem.alpha(1), problem.alpha(1)*0.97^Gmax,problem.gamma(1));
     fprintf('Result for Gen %d, Popsize %d \n', Gmax,N);
-    fprintf('Number of results in archive %d \n', archiveMOFA.number_firefly);
+    fprintf('Number of results in MOFA archive %d \n', archiveMOFA.number_firefly);
     displayAllGenResult(problem, scoresMOFA, paretoFrontNSGA2, paretoFrontPESA, OptiPareto);
     displayResult(problem, archiveMOFA.firefly_scores, paretoFrontNSGA2(Gmax).array, paretoFrontPESA(Gmax).array, OptiPareto, metrics);
 end

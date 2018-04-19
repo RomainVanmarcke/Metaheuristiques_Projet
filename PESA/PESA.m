@@ -6,18 +6,18 @@ function [paretoFrontAllG, scores ] = PESA(problem)
     L = problem.L;  % chromosome size = number of genes
     pc = 0.7;
     pm = 1/L;
-    nGrid = 10; % number of grids per dimension
+    nGrid = problem.nGrid; % number of grids per dimension
     % alpha = 0.5;
     n=20;
     %sigma = 1;
     
     M = Pi; % mating pool size
     
-    crossoverFunction= @simulatedBinaryCrossoverPESA;
+    crossoverFunction= problem.crossover;
 %     crossoverFunction = @uniformCrossoverPESA;
     
-%     mutationFunction = @polynomialMutationPESA;
-    mutationFunction = @boundaryMutationPESA;
+    mutationFunction = problem.mutation;
+%     mutationFunction = @boundaryMutationPESA;
 %     mutationFunction = @uniformMutationPESA;
 %     mutationFunction = @normalMutationPESA;
     
