@@ -6,7 +6,7 @@ function main()
     M = 200; % Number of points wanted in MOFA approximation of Pareto Front
 
     %PROBLEM
-    problem.fitnessFunction = @schaffer;
+    problem.fitnessFunction = @fonseca;
     problem = setProblemParameters(problem, N, Gmax, objNumber);
     
     % MOFA PARAMETERS
@@ -53,7 +53,7 @@ function main()
     fprintf('Alpha(at start) : %4.2f, Alpha(at end) : %4.2f,  Gamma : %4.2f \n', problem.alpha(1), problem.alpha(1)*0.97^Gmax,problem.gamma(1));
     fprintf('Result for Gen %d, Popsize %d \n', Gmax,N);
     fprintf('Number of results in MOFA archive %d \n', archiveMOFA.number_firefly);
-%     displayAllGenResult(problem, scoresMOFA, paretoFrontNSGA2, paretoFrontPESA, OptiPareto);
+    displayAllGenResult(problem, scoresMOFA, scoresNSGA2, scoresPESA, OptiPareto);
     displayResult(problem, archiveMOFA.firefly_scores, paretoFrontNSGA2(Gmax).array, paretoFrontPESA(Gmax).array, OptiPareto, metrics);
 end
 
