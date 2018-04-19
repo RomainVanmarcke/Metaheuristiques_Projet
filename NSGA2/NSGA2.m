@@ -16,7 +16,7 @@ function [paretoFront, scores ] = NSGA2(problem)
     k = 2; %size of tournament
     
     %CROSSOVER
-    crossoverFunction = @simulatedBinaryCrossover;
+    crossoverFunction = @uniformCrossover;
     alpha = 0.5; %control the scope of the expansion
     
     %MUTATION
@@ -26,7 +26,7 @@ function [paretoFront, scores ] = NSGA2(problem)
     n = 20; %control parameter
     
     %FEASIBILITY
-    feasibilityFunction = @firstMethod;
+    feasibilityFunction = @secondMethod;
     
     %% EXECUTION PART
 %     scores = zeros(Gmax, N, objNumber); %scores is a matrix of scores

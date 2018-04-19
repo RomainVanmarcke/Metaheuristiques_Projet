@@ -1,12 +1,12 @@
 function main()
     all = tic;
-    N = 10; %Population size 
+    N = 50; %Population size 
     Gmax = 250; %Generation max
     objNumber = 2; %Number of objectives functions
     M = 200; % Number of points wanted in MOFA approximation of Pareto Front
 
     %PROBLEM
-    problem.fitnessFunction = @zdt6;
+    problem.fitnessFunction = @schaffer;
     problem = setProblemParameters(problem, N, Gmax, objNumber);
     
     % MOFA PARAMETERS
@@ -20,7 +20,7 @@ function main()
     
     % PESA PARAMETERS
     problem.nGrid = 8; % number of grids per dimension
-    problem.crossover = @simulatedBinaryCrossover;
+    problem.crossover = @uniformCrossover;
     problem.mutation = @normalMutationPESA;
     
     tic

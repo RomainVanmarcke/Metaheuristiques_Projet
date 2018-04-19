@@ -5,7 +5,7 @@ function [paretoFrontAllG, scores ] = PESA(problem)
     Pe = 100; % externalPopulation size
     L = problem.L;  % chromosome size = number of genes
     pc = 0.7;
-    pm = 1/3;
+    pm = 1/L;
     nGrid = problem.nGrid; % number of grids per dimension
     % alpha = 0.5;
     n=20;
@@ -112,11 +112,12 @@ function [paretoFrontAllG, scores ] = PESA(problem)
         end
 
         
+        toDelete = false(size(squeezeFactor));
+        
         while Pe<numArchive
             [~, indice] = max(squeezeFactor);
             squeezeFactor(indice) = 0;
-            externalPopulation(indice,:) = [];
-            externalPopulationGrid(indice,:) = [];
+            toDelete(indice)=true;
             for i = 1:size(crowdMatrix,1)
                 if crowdMatrix(indice,i) == true
                     squeezeFactor(i) = squeezeFactor(i)-1;
@@ -125,7 +126,10 @@ function [paretoFrontAllG, scores ] = PESA(problem)
                 end
             end
             numArchive = numArchive-1;
-        end          
+        end
+        
+        externalPopulation(toDelete== true,:) = [];
+        externalPopulationGrid(toDelete == true,:) = [];
         
         %Crossover
         children = zeros(M,L);
